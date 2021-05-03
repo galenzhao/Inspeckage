@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -317,7 +318,11 @@ public class MainFragment extends Fragment {
         mPrefs.putString(Config.SP_APK_DIR, pd.getApkDir());
         mPrefs.putString(Config.SP_UID, pd.getUID());
         mPrefs.putString(Config.SP_GIDS, pd.getGIDs());
-        mPrefs.putString(Config.SP_DATA_DIR, pd.getDataDir());
+
+        //todo 这个目录要多进程可以访问才行
+        String absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+
+        mPrefs.putString(Config.SP_DATA_DIR, absolutePath);
 
         mPrefs.putString(Config.SP_REQ_PERMISSIONS, pd.getRequestedPermissions());
         mPrefs.putString(Config.SP_APP_PERMISSIONS, pd.getAppPermissions());

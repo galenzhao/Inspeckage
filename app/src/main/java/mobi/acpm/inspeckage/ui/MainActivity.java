@@ -68,10 +68,10 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction.commit();
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            boolean granted = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED;
+            boolean granted = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED;
             boolean grantedPhone = checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED;
             if (granted || grantedPhone) {
-                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE}, 0);
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE}, 0);
             }
 
             AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
@@ -117,7 +117,8 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings({"deprecation", "ResultOfMethodCallIgnored"})
     @SuppressLint({"SetWorldReadable", "WorldReadableFiles"})
     private void setWorldReadable() {
-        File dataDir = new File(getApplicationInfo().dataDir);
+        String dir = getApplicationInfo().dataDir;
+        File dataDir = new File(dir);
         File prefsDir = new File(dataDir, "shared_prefs");
         File prefsFile = new File(prefsDir, Module.PREFS+".xml");
         Log.d("Q_M", "if 设置 文件可读 之前" + prefsFile);

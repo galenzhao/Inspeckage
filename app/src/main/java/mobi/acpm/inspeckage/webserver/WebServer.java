@@ -85,6 +85,7 @@ public class WebServer extends fi.iki.elonen.NanoHTTPD {
     private Context mContext;
     private InspeckagePreferences mPrefs;
     private KeyStore keyStore;
+    private String TAG = "WebServer";
 
     public WebServer(String host, int port, Context context) throws IOException {
         super(host,port);
@@ -247,6 +248,7 @@ public class WebServer extends fi.iki.elonen.NanoHTTPD {
         String html = new String();
 
 
+        Log.i(TAG, "serve: uri="+uri + ",type="+type+"parms="+parms);
         if (uri.equals("/")) {
             if (type != null) {
                 switch (type) {
@@ -1494,6 +1496,8 @@ public class WebServer extends fi.iki.elonen.NanoHTTPD {
             }
             case "http": {
                 html = FileUtil.readFromFile(mPrefs, HTTP).replace(HttpHook.TAG, "");
+
+                Log.i(TAG, "hooksContent: http,html="+html);
                 if(!html.equals("")) {
                     String[] x = html.split("</br>");
                     for (int i = 0; i < x.length; i++) {

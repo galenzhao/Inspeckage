@@ -12,15 +12,13 @@ import mobi.acpm.inspeckage.util.FileUtil;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private static int TIME_OUT = 2000;
-    private SharedPreferences mPrefs;
+    private static int TIME_OUT = 200;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        mPrefs = getSharedPreferences(Module.PREFS, MODE_PRIVATE);
         FileUtil.fixSharedPreference(this);
 
         new Handler().postDelayed(new Runnable() {

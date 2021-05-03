@@ -32,6 +32,8 @@ import mobi.acpm.inspeckage.preferences.InspeckagePreferences;
  */
 public class FileUtil {
 
+    static String TAG = "FileUtil";
+
     public static void fixSharedPreference(Context context) {
 
         File folder = new File(Config.P_INSPECKAGE_PATH);
@@ -45,13 +47,8 @@ public class FileUtil {
 
         try {
 
-            String absolutePath;
+            String absolutePath = prefs.getString(Config.SP_DATA_DIR, "")+Config.P_ROOT;
 
-            if (prefs.getBoolean(Config.SP_HAS_W_PERMISSION,false)) {
-                absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath()+Config.P_ROOT+"/"+prefs.getString(Config.SP_PACKAGE,"");
-            } else {
-                absolutePath = prefs.getString(Config.SP_DATA_DIR, "")+Config.P_ROOT;
-            }
             boolean append = true;
             if (ft != null) {
                 switch (ft) {
@@ -128,6 +125,9 @@ public class FileUtil {
 
                 File file = new File(absolutePath);
 
+
+                Log.i(TAG, "writeToFile: absolutePath=" + absolutePath + ",ft="+ft + ",name="+name + ",data="+data + ",file.exists="+file.exists());
+
                 if (!file.exists()) {
 
                     File path = new File(String.valueOf(file.getParentFile()));
@@ -166,13 +166,7 @@ public class FileUtil {
         String text = "";
         try {
 
-            String absolutePath;
-
-            if (prefs.getBoolean(Config.SP_HAS_W_PERMISSION, false)) {
-                absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath()+Config.P_ROOT+"/"+prefs.getString(Config.SP_PACKAGE,"");
-            } else {
-                absolutePath = prefs.getString(Config.SP_DATA_DIR, "")+Config.P_ROOT;
-            }
+            String absolutePath = prefs.getString(Config.SP_DATA_DIR, "")+Config.P_ROOT;
 
             switch (ft) {
                 case SERIALIZATION:
@@ -223,7 +217,10 @@ public class FileUtil {
                 default:
             }
 
+
+
             File file = new File(absolutePath);
+            Log.d(TAG, "readFromFile: absolutePath=" + absolutePath + ",file.exists()="+file.exists());
             if (file.exists()) {
 
                 //se o arquivo for muito grande, lê apenas o final do arquivo - 1mb
@@ -257,13 +254,28 @@ public class FileUtil {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            Log.e(TAG, "readFromFile: e=" + e.getMessage());
         }
 
         return text;
     }
 
+
+    public boolean fileIsExists(String filename) {
+        try {
+            File f = new File(filename);
+            if (!f.exists()) {
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
     public static Map<String, String> readMultiFile(InspeckagePreferences prefs, String folderName) {
 
+        Log.i(TAG, "readMultiFile: folderName=" +folderName);
         Map<String, String> files = new HashMap<>();
         try {
 
@@ -302,6 +314,7 @@ public class FileUtil {
 
     public static String readHtmlFile(Context context, String fileName) {
 
+        Log.d(TAG, "readHtmlFile: fileName="+fileName);
         String htmlFile = "";
         try {
 

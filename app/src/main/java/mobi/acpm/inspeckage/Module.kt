@@ -1,6 +1,5 @@
 package mobi.acpm.inspeckage
 
-import android.app.AndroidAppHelper
 import android.app.Application
 import android.content.Context
 import android.util.Log
@@ -8,9 +7,9 @@ import de.robv.android.xposed.*
 import de.robv.android.xposed.IXposedHookZygoteInit.StartupParam
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import mobi.acpm.inspeckage.hooks.*
-import mobi.acpm.inspeckage.hooks.entities.LocationHook
 import mobi.acpm.inspeckage.preferences.InspeckagePreferences
 import mobi.acpm.inspeckage.util.Config
+import mobi.acpm.inspeckage.util.Config.SP_DATA_DIR
 import mobi.acpm.inspeckage.util.FileType
 import mobi.acpm.inspeckage.util.FileUtil
 import java.io.File
@@ -63,23 +62,28 @@ class Module : XC_MethodHook(), IXposedHookLoadPackage, IXposedHookZygoteInit {
                 // 获取配置
                 val sPrefs = InspeckagePreferences(mContext)
 
-                val dataDir = AndroidAppHelper.currentApplicationInfo().dataDir
+                val dataDir = sPrefs.getString(SP_DATA_DIR, "") + Config.P_ROOT
+
                 val savePackageName = sPrefs.getString("package")
-                Log.i(TAG, "handleLoadPackage: packageName=" + loadPackageParam.packageName + ",savePackageName=" + savePackageName + ",dataDir" + dataDir)
+                //absolutePath=/data/user/0/com.lanshifu.baselibraryktx/Inspeckage
                 if (loadPackageParam.packageName != savePackageName) {
                     return
                 }
+                Log.i(TAG, "handleLoadPackage: packageName=" + loadPackageParam.packageName + ",savePackageName=" + savePackageName + ",dataDir" + dataDir)
 
 
                 //inspeckage needs access to the files
                 val folder = File(dataDir)
                 folder.setExecutable(true, false)
+
                 XposedHelpers.findAndHookMethod("android.util.Log", loadPackageParam.classLoader, "i",
                         String::class.java, String::class.java, object : XC_MethodHook() {
                     @Throws(Throwable::class)
                     override fun afterHookedMethod(param: MethodHookParam) {
-                        if (param.args[0] === "Xposed") {
+                        val tag = param.args[0]
+                        if (param.args[0] === "Xposed" || param.args[0] == "EdXposed-Bridge") {
                             val log = param.args[1] as String
+                            Log.d(TAG, "android.util.Log: tag=$tag,log=$log")
                             var ft: FileType? = null
                             if (log.contains(SharedPrefsHook.TAG)) { //5
                                 ft = FileType.PREFS
