@@ -261,10 +261,10 @@ public class MainActivity extends AppCompatActivity
 
     private void clearAll(){
 
-        String appPath = Environment.getExternalStorageDirectory().getAbsolutePath();
-        if (!mPrefs.getBoolean(Config.SP_HAS_W_PERMISSION, false)) {
-            appPath = mPrefs.getString(Config.SP_DATA_DIR, "");
-        }
+        Log.i("TAG", "clearAll: ");
+//        if (!mPrefs.getBoolean(Config.SP_HAS_W_PERMISSION, false)) {
+//            appPath = mPrefs.getString(Config.SP_DATA_DIR, "");
+//        }
 
         mPrefs.putString(Config.SP_PROXY_HOST, "");
         mPrefs.putString(Config.SP_PROXY_PORT, "");
@@ -273,10 +273,10 @@ public class MainActivity extends AppCompatActivity
         mPrefs.putBoolean(Config.SP_UNPINNING, false);
         mPrefs.putBoolean(Config.SP_EXPORTED, false);
         mPrefs.putBoolean(Config.SP_HAS_W_PERMISSION, true);
-        mPrefs.putString(Config.SP_SERVER_HOST, null);
-        mPrefs.putString(Config.SP_SERVER_PORT, null);
-        mPrefs.putString(Config.SP_SERVER_IP, null);
-        mPrefs.putString(Config.SP_SERVER_INTERFACES, "");
+//        mPrefs.putString(Config.SP_SERVER_HOST, "");
+//        mPrefs.putString(Config.SP_SERVER_PORT, "");
+//        mPrefs.putString(Config.SP_SERVER_IP, "");
+//        mPrefs.putString(Config.SP_SERVER_INTERFACES, "");
 
         mPrefs.putString(Config.SP_PACKAGE, "");
         mPrefs.putString(Config.SP_APP_NAME, "");
@@ -308,8 +308,11 @@ public class MainActivity extends AppCompatActivity
         mPrefs.putString(Config.SP_USER_HOOKS, "");
 
 
+
+        String appPath = Environment.getExternalStorageDirectory().getAbsolutePath();
         File root = new File(appPath + Config.P_ROOT);
         FileUtil.deleteRecursive(root);
+        Log.i("TAG", "clearAll: end,root=" + root.getAbsolutePath());
 
     }
 }

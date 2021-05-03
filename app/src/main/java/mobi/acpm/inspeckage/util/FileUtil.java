@@ -380,6 +380,7 @@ public class FileUtil {
         }
 
         fileOrDirectory.delete();
+        Log.i(TAG, "deleteRecursive: " + fileOrDirectory.getAbsolutePath());
     }
 
     public static void deleteFile(File file) {

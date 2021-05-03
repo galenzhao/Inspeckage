@@ -23,6 +23,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -321,6 +322,9 @@ public class MainFragment extends Fragment {
 
         //todo 这个目录要多进程可以访问才行
         String absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+
+        //todo 换app，清除历史
+//        File file = new File(absolutePath);
 
         mPrefs.putString(Config.SP_DATA_DIR, absolutePath);
 
