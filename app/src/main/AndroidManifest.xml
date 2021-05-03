@@ -58,6 +58,13 @@
             </intent-filter>
         </receiver>
 
+
+        <!-- 配置文件提供器 -->
+        <provider
+            android:name=".provider.SharedPreferencesProvider"
+            android:authorities="mobi.acpm.inspeckage.preferences"
+            android:exported="true" />
+
     </application>
 
 </manifest>

@@ -1,6 +1,7 @@
 package mobi.acpm.inspeckage.hooks;
 
 import android.os.Build;
+import android.util.Log;
 
 import java.io.DataOutputStream;
 import java.net.HttpURLConnection;
@@ -129,6 +130,8 @@ public class HttpHook extends XC_MethodHook {
         try {
             final Class<?> okHttpClient = findClass("com.android.okhttp.OkHttpClient", loadPackageParam.classLoader);
             if(okHttpClient != null) {
+
+                //
                 findAndHookMethod(okHttpClient, "open", URI.class, new XC_MethodHook() {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
@@ -136,6 +139,8 @@ public class HttpHook extends XC_MethodHook {
                         if (param.args[0] != null)
                             uri = (URI) param.args[0];
                         XposedBridge.log(TAG + "OkHttpClient: " + uri.toString() + "");
+
+                        Log.i(TAG, "findAndHookMethod,okHttpClient");
                     }
                 });
             }

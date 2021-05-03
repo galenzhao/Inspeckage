@@ -15,6 +15,7 @@ import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import mobi.acpm.inspeckage.Module;
+import mobi.acpm.inspeckage.preferences.InspeckagePreferences;
 import mobi.acpm.inspeckage.util.FileType;
 import mobi.acpm.inspeckage.util.FileUtil;
 
@@ -29,17 +30,15 @@ public class SharedPrefsHook extends XC_MethodHook {
 
     public static final String TAG = "Inspeckage_Prefs:";
     static StringBuffer sb = null;
-    private static XSharedPreferences sPrefs;
+    private static InspeckagePreferences sPrefs;
     public static String putFileName = "";
 
     public static void loadPrefs() {
-        sPrefs = new XSharedPreferences(Module.class.getPackage().getName(), Module.PREFS);
-        sPrefs.makeWorldReadable();
     }
 
-    public static void initAllHooks(final XC_LoadPackage.LoadPackageParam loadPackageParam) {
+    public static void initAllHooks(final XC_LoadPackage.LoadPackageParam loadPackageParam,InspeckagePreferences prefs) {
 
-        loadPrefs();
+        SharedPrefsHook.sPrefs = prefs;
 
         findAndHookMethod(ContextWrapper.class, "getSharedPreferences",
                 String.class, "int", new XC_MethodHook() {
@@ -136,23 +135,23 @@ public class SharedPrefsHook extends XC_MethodHook {
                     }
                 });
 
-        findAndHookMethod("android.app.SharedPreferencesImpl", loadPackageParam.classLoader, "getBoolean",
-                String.class, "boolean", new XC_MethodHook() {
-
-                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                        File f = (File) getObjectField(param.thisObject, "mFile");
-
-                        Module.sPrefs.reload();
-                        String[] strReplace = Module.sPrefs.getString("prefs_replace", "").split(",");
-                        String key = (String) param.args[0];
-
-                        if (key.equals(strReplace[0])) {
-                            param.setResult(strReplace[1]);
-                        }
-
-                        XposedBridge.log(TAG + "GET[" + f.getName() + "] Boolean(" + param.args[0] + " , " + String.valueOf(param.getResult()) + ")");
-                    }
-                });
+//        findAndHookMethod("android.app.SharedPreferencesImpl", loadPackageParam.classLoader, "getBoolean",
+//                String.class, "boolean", new XC_MethodHook() {
+//
+//                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                        File f = (File) getObjectField(param.thisObject, "mFile");
+//
+//                        Module.sPrefs.reload();
+//                        String[] strReplace = Module.sPrefs.getString("prefs_replace", "").split(",");
+//                        String key = (String) param.args[0];
+//
+//                        if (key.equals(strReplace[0])) {
+//                            param.setResult(strReplace[1]);
+//                        }
+//
+//                        XposedBridge.log(TAG + "GET[" + f.getName() + "] Boolean(" + param.args[0] + " , " + String.valueOf(param.getResult()) + ")");
+//                    }
+//                });
 
         findAndHookMethod("android.app.SharedPreferencesImpl", loadPackageParam.classLoader, "getFloat",
                 String.class, "float", new XC_MethodHook() {

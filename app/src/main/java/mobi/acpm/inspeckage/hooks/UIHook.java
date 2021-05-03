@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
@@ -30,6 +31,7 @@ public class UIHook extends XC_MethodHook {
                 Context context = (Context) appCompatActivity.getApplicationContext();
                 context.registerReceiver(new InspeckageReceiver(param.thisObject),
                         new IntentFilter("mobi.acpm.inspeckage.INSPECKAGE_FILTER"));
+                Log.w(TAG, "afterHookedMethod: appCompatActivity="+appCompatActivity );
 
             }
         });

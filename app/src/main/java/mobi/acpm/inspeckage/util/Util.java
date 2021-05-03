@@ -8,8 +8,9 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
-import android.support.v4.app.TaskStackBuilder;
-import android.support.v7.app.NotificationCompat;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.TaskStackBuilder;
 import android.util.Base64;
 
 import java.io.ByteArrayInputStream;
@@ -120,7 +121,7 @@ public class Util {
 
     public static void showNotification(Context mContext, String info) {
 
-        android.support.v4.app.NotificationCompat.Builder mBuilder =
+        androidx.core.app.NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(mContext)
                         .setSmallIcon(R.drawable.inspectorw)
                         .setContentTitle("Inspeckage")

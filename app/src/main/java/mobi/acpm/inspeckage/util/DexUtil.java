@@ -18,6 +18,7 @@ import java.util.Map;
 
 import dalvik.system.DexFile;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import mobi.acpm.inspeckage.preferences.InspeckagePreferences;
 
 import static android.text.TextUtils.isDigitsOnly;
 
@@ -77,7 +78,7 @@ public class DexUtil {
         return classes;
     }
 
-    public static void saveClassesWithMethodsJson(XC_LoadPackage.LoadPackageParam loadPackageParam, SharedPreferences prefs) throws Throwable {
+    public static void saveClassesWithMethodsJson(XC_LoadPackage.LoadPackageParam loadPackageParam, InspeckagePreferences prefs) throws Throwable {
 
         String packageName = prefs.getString("package", "");
         Map<String, ArrayList<String>> classes = DexUtil.getClassesWithMethods(loadPackageParam, packageName);

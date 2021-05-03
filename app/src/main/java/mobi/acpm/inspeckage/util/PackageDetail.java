@@ -15,6 +15,7 @@ import android.content.pm.ServiceInfo;
 import java.util.List;
 
 import mobi.acpm.inspeckage.Module;
+import mobi.acpm.inspeckage.preferences.InspeckagePreferences;
 
 /**
  * Created by acpm on 16/11/15.
@@ -24,13 +25,12 @@ public class PackageDetail {
     private PackageInfo mPInfo;
     private ApplicationInfo mAppInfo;
     private Context mContext;
-    private SharedPreferences mPrefs;
+    private InspeckagePreferences mPrefs;
     private PackageManager pm;
 
     public PackageDetail(Context context, String app) {
 
-        mPrefs = context.getSharedPreferences(Module.PREFS, context.MODE_PRIVATE);
-
+        mPrefs = new InspeckagePreferences(context);
         mContext = context;
         pm = context.getPackageManager();
         List<PackageInfo> plist = context.getPackageManager().getInstalledPackages(0);

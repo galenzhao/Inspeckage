@@ -56,6 +56,7 @@ import mobi.acpm.inspeckage.hooks.SharedPrefsHook;
 import mobi.acpm.inspeckage.hooks.UserHooks;
 import mobi.acpm.inspeckage.hooks.WebViewHook;
 import mobi.acpm.inspeckage.log.LogService;
+import mobi.acpm.inspeckage.preferences.InspeckagePreferences;
 import mobi.acpm.inspeckage.receivers.InspeckageWebReceiver;
 import mobi.acpm.inspeckage.util.Config;
 import mobi.acpm.inspeckage.util.FileUtil;
@@ -82,13 +83,13 @@ import static mobi.acpm.inspeckage.util.FileType.WEBVIEW;
 public class WebServer extends fi.iki.elonen.NanoHTTPD {
 
     private Context mContext;
-    private SharedPreferences mPrefs;
+    private InspeckagePreferences mPrefs;
     private KeyStore keyStore;
 
     public WebServer(String host, int port, Context context) throws IOException {
         super(host,port);
         mContext = context;
-        mPrefs = mContext.getSharedPreferences(Module.PREFS, mContext.MODE_PRIVATE);
+        mPrefs = new InspeckagePreferences(context);
 
         try {
             keyStore = KeyStore.getInstance("AndroidKeyStore");
@@ -102,9 +103,7 @@ public class WebServer extends fi.iki.elonen.NanoHTTPD {
 
             //use uuid as an alias, that way each installation has your own alias
             if(mPrefs.getString(Config.KEYPAIR_ALIAS,"").equals("")) {
-                SharedPreferences.Editor edit = mPrefs.edit();
-                edit.putString(Config.KEYPAIR_ALIAS, UUID.randomUUID().toString());
-                edit.apply();
+                mPrefs.putString(Config.KEYPAIR_ALIAS, UUID.randomUUID().toString());
             }
 
             String alias = mPrefs.getString(Config.KEYPAIR_ALIAS,"");
@@ -238,10 +237,8 @@ public class WebServer extends fi.iki.elonen.NanoHTTPD {
             String ip = session.getHeaders().get("http-client-ip");
             if (ip != null && !ip.trim().equals("")) {
 
-                SharedPreferences.Editor edit = mPrefs.edit();
-                edit.putString(Config.SP_PROXY_HOST, ip);
-                edit.putString(Config.SP_PROXY_PORT, "4443");
-                edit.apply();
+                mPrefs.putString(Config.SP_PROXY_HOST, ip);
+                mPrefs.putString(Config.SP_PROXY_PORT, "4443");
             }
         }
 
@@ -407,10 +404,8 @@ public class WebServer extends fi.iki.elonen.NanoHTTPD {
 
         if (mPrefs.getBoolean(Config.SP_EXPORTED, false)) {
             PackageDetail pd = new PackageDetail(mContext, mPrefs.getString(Config.SP_PACKAGE, ""));
-            SharedPreferences.Editor edit = mPrefs.edit();
-            edit.putString(Config.SP_EXP_ACTIVITIES, pd.getExportedActivities());
-            edit.putString(Config.SP_N_EXP_ACTIVITIES, pd.getNonExportedActivities());
-            edit.apply();
+            mPrefs.putString(Config.SP_EXP_ACTIVITIES, pd.getExportedActivities());
+            mPrefs.putString(Config.SP_N_EXP_ACTIVITIES, pd.getNonExportedActivities());
         }
 
 
@@ -439,10 +434,8 @@ public class WebServer extends fi.iki.elonen.NanoHTTPD {
     }
 
     private String setDefaultOptions() {
-        SharedPreferences.Editor edit = mPrefs.edit();
-        edit.putBoolean(Config.SP_APP_IS_RUNNING, false);
-        edit.putString(Config.SP_DATA_DIR_TREE, "");
-        edit.apply();
+        mPrefs.putBoolean(Config.SP_APP_IS_RUNNING, false);
+        mPrefs.putString(Config.SP_DATA_DIR_TREE, "");
 
         isRunning();
         fileTree();
@@ -454,45 +447,43 @@ public class WebServer extends fi.iki.elonen.NanoHTTPD {
         String tab = parms.get("tab");
         if (tab != null) {
             String state = parms.get("value");
-            SharedPreferences.Editor edit = mPrefs.edit();
 
             switch (tab){
                 case "shared":
-                    edit.putBoolean(Config.SP_TAB_ENABLE_SHAREDP, Boolean.valueOf(state));
+                    mPrefs.putBoolean(Config.SP_TAB_ENABLE_SHAREDP, Boolean.valueOf(state));
                     break;
                 case "serialization":
-                    edit.putBoolean(Config.SP_TAB_ENABLE_SERIALIZATION, Boolean.valueOf(state));
+                    mPrefs.putBoolean(Config.SP_TAB_ENABLE_SERIALIZATION, Boolean.valueOf(state));
                     break;
                 case "crypto":
-                    edit.putBoolean(Config.SP_TAB_ENABLE_CRYPTO, Boolean.valueOf(state));
+                    mPrefs.putBoolean(Config.SP_TAB_ENABLE_CRYPTO, Boolean.valueOf(state));
                     break;
                 case "hash":
-                    edit.putBoolean(Config.SP_TAB_ENABLE_HASH, Boolean.valueOf(state));
+                    mPrefs.putBoolean(Config.SP_TAB_ENABLE_HASH, Boolean.valueOf(state));
                     break;
                 case "sqlite":
-                    edit.putBoolean(Config.SP_TAB_ENABLE_SQLITE, Boolean.valueOf(state));
+                    mPrefs.putBoolean(Config.SP_TAB_ENABLE_SQLITE, Boolean.valueOf(state));
                     break;
                 case "http":
-                    edit.putBoolean(Config.SP_TAB_ENABLE_HTTP, Boolean.valueOf(state));
+                    mPrefs.putBoolean(Config.SP_TAB_ENABLE_HTTP, Boolean.valueOf(state));
                     break;
                 case "filesystem":
-                    edit.putBoolean(Config.SP_TAB_ENABLE_FS, Boolean.valueOf(state));
+                    mPrefs.putBoolean(Config.SP_TAB_ENABLE_FS, Boolean.valueOf(state));
                     break;
                 case "misc":
-                    edit.putBoolean(Config.SP_TAB_ENABLE_MISC, Boolean.valueOf(state));
+                    mPrefs.putBoolean(Config.SP_TAB_ENABLE_MISC, Boolean.valueOf(state));
                     break;
                 case "webview":
-                    edit.putBoolean(Config.SP_TAB_ENABLE_WV, Boolean.valueOf(state));
+                    mPrefs.putBoolean(Config.SP_TAB_ENABLE_WV, Boolean.valueOf(state));
                     break;
                 case "ipc":
-                    edit.putBoolean(Config.SP_TAB_ENABLE_IPC, Boolean.valueOf(state));
+                    mPrefs.putBoolean(Config.SP_TAB_ENABLE_IPC, Boolean.valueOf(state));
                     break;
                 case "phooks":
-                    edit.putBoolean(Config.SP_TAB_ENABLE_PHOOKS, Boolean.valueOf(state));
+                    mPrefs.putBoolean(Config.SP_TAB_ENABLE_PHOOKS, Boolean.valueOf(state));
                     break;
 
             }
-            edit.apply();
 
         }
         return "#tab_scheckbox#";
@@ -501,9 +492,7 @@ public class WebServer extends fi.iki.elonen.NanoHTTPD {
     private String sslUnpinning(Map<String, String> parms) {
         String ssl_switch = parms.get("sslswitch");
         if (ssl_switch != null) {
-            SharedPreferences.Editor edit = mPrefs.edit();
-            edit.putBoolean(Config.SP_UNPINNING, Boolean.valueOf(ssl_switch));
-            edit.apply();
+            mPrefs.putBoolean(Config.SP_UNPINNING, Boolean.valueOf(ssl_switch));
             if (Boolean.valueOf(ssl_switch))
                 Util.showNotification(mContext, "Disable SSL");
         }
@@ -518,14 +507,12 @@ public class WebServer extends fi.iki.elonen.NanoHTTPD {
             String host = mPrefs.getString(Config.SP_PROXY_HOST, "");
             String port = mPrefs.getString(Config.SP_PROXY_PORT, "");
 
-            SharedPreferences.Editor edit = mPrefs.edit();
             if (Boolean.valueOf(pswitch) && host.length() > 1 && port.length() > 0) {
-                edit.putBoolean(Config.SP_SWITCH_PROXY, true);
+                mPrefs.putBoolean(Config.SP_SWITCH_PROXY, true);
                 Util.showNotification(mContext, "Proxy Enable");
             } else {
-                edit.putBoolean(Config.SP_SWITCH_PROXY, false);
+                mPrefs.putBoolean(Config.SP_SWITCH_PROXY, false);
             }
-            edit.apply();
         }
         return "#proxy#";
     }
@@ -536,10 +523,8 @@ public class WebServer extends fi.iki.elonen.NanoHTTPD {
 
         if (host != null && port != null && Util.isInt(port)) {
 
-            SharedPreferences.Editor edit = mPrefs.edit();
-            edit.putString(Config.SP_PROXY_PORT, port);
-            edit.putString(Config.SP_PROXY_HOST, host);
-            edit.apply();
+            mPrefs.putString(Config.SP_PROXY_PORT, port);
+            mPrefs.putString(Config.SP_PROXY_HOST, host);
             Util.showNotification(mContext, "Save Proxy: " + host + ":" + port);
         }
         return "#proxy#";
@@ -548,9 +533,9 @@ public class WebServer extends fi.iki.elonen.NanoHTTPD {
     private String flagSecure(Map<String, String> parms) {
         String fs_switch = parms.get("fsswitch");
         if (fs_switch != null) {
-            SharedPreferences.Editor edit = mPrefs.edit();
-            edit.putBoolean(Config.SP_FLAG_SECURE, Boolean.valueOf(fs_switch));
-            edit.apply();
+            
+            mPrefs.putBoolean(Config.SP_FLAG_SECURE, Boolean.valueOf(fs_switch));
+            
             if (Boolean.valueOf(fs_switch))
                 Util.showNotification(mContext, "Disable all FLAG_SECURE");
         }
@@ -560,9 +545,9 @@ public class WebServer extends fi.iki.elonen.NanoHTTPD {
     private String spExported(Map<String, String> parms) {
         String value = parms.get("value");
         if (value != null) {
-            SharedPreferences.Editor edit = mPrefs.edit();
-            edit.putBoolean(Config.SP_EXPORTED, Boolean.valueOf(value));
-            edit.apply();
+            
+            mPrefs.putBoolean(Config.SP_EXPORTED, Boolean.valueOf(value));
+            
             if (Boolean.valueOf(value))
                 Util.showNotification(mContext, "Export all activities");
         }
@@ -675,9 +660,9 @@ public class WebServer extends fi.iki.elonen.NanoHTTPD {
     private Response addUserHooks(Map<String, String> parms) {
 
         String json = parms.get("jhooks");
-        SharedPreferences.Editor edit = mPrefs.edit();
-        edit.putString(Config.SP_USER_HOOKS, json);
-        edit.apply();
+        
+        mPrefs.putString(Config.SP_USER_HOOKS, json);
+        
 
         return ok("OK");
     }
@@ -685,9 +670,9 @@ public class WebServer extends fi.iki.elonen.NanoHTTPD {
     private Response addUserReplaces(Map<String, String> parms) {
 
         String json = parms.get("data");
-        SharedPreferences.Editor edit = mPrefs.edit();
-        edit.putString(Config.SP_USER_REPLACES, json);
-        edit.apply();
+        
+        mPrefs.putString(Config.SP_USER_REPLACES, json);
+        
 
         return ok("OK");
     }
@@ -695,9 +680,9 @@ public class WebServer extends fi.iki.elonen.NanoHTTPD {
     private Response addUserReturnReplaces(Map<String, String> parms) {
 
         String json = parms.get("data");
-        SharedPreferences.Editor edit = mPrefs.edit();
-        edit.putString(Config.SP_USER_RETURN_REPLACES, json);
-        edit.apply();
+        
+        mPrefs.putString(Config.SP_USER_RETURN_REPLACES, json);
+        
 
         return ok("OK");
     }
@@ -745,9 +730,9 @@ public class WebServer extends fi.iki.elonen.NanoHTTPD {
 
         String json = parms.get("build");
         json = "{\"fingerprintItems\":"+json+"}";
-        SharedPreferences.Editor edit = mPrefs.edit();
-        edit.putString(Config.SP_FINGERPRINT_HOOKS, json);
-        edit.apply();
+        
+        mPrefs.putString(Config.SP_FINGERPRINT_HOOKS, json);
+        
 
         return ok("OK");
     }
@@ -840,9 +825,9 @@ public class WebServer extends fi.iki.elonen.NanoHTTPD {
     private Response addLocation(Map<String, String> parms) {
 
         String loc = parms.get("geolocation");
-        SharedPreferences.Editor edit = mPrefs.edit();
-        edit.putString(Config.SP_GEOLOCATION, loc);
-        edit.apply();
+        
+        mPrefs.putString(Config.SP_GEOLOCATION, loc);
+        
         return ok("OK");
     }
 
@@ -854,9 +839,9 @@ public class WebServer extends fi.iki.elonen.NanoHTTPD {
     private Response geoLocSwitch(Map<String, String> parms) {
         String geo_switch = parms.get("geolocationSwitch");
         if (geo_switch != null) {
-            SharedPreferences.Editor edit = mPrefs.edit();
-            edit.putBoolean(Config.SP_GEOLOCATION_SW, Boolean.valueOf(geo_switch));
-            edit.apply();
+            
+            mPrefs.putBoolean(Config.SP_GEOLOCATION_SW, Boolean.valueOf(geo_switch));
+            
             if (Boolean.valueOf(geo_switch)) {
                 Util.showNotification(mContext, "Geolocation ON");
             }

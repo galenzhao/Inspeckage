@@ -1,6 +1,7 @@
 package mobi.acpm.inspeckage.ui;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -9,12 +10,13 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.navigation.NavigationView;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -27,6 +29,7 @@ import java.io.File;
 
 import mobi.acpm.inspeckage.Module;
 import mobi.acpm.inspeckage.R;
+import mobi.acpm.inspeckage.preferences.InspeckagePreferences;
 import mobi.acpm.inspeckage.util.Config;
 import mobi.acpm.inspeckage.util.FileUtil;
 import mobi.acpm.inspeckage.webserver.InspeckageService;
@@ -34,11 +37,14 @@ import mobi.acpm.inspeckage.webserver.InspeckageService;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private SharedPreferences mPrefs;
+    private InspeckagePreferences mPrefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mPrefs = new InspeckagePreferences(this);
+        
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -52,7 +58,6 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        mPrefs = getSharedPreferences(Module.PREFS, MODE_PRIVATE);
 
         //main fragment
         FragmentManager fragmentManager = getFragmentManager();
@@ -92,9 +97,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 @Override
                 protected void onPostExecute(String advertId) {
-                    SharedPreferences.Editor editor = mPrefs.edit();
-                    editor.putString(Config.SP_ADS_ID,advertId);
-                    editor.apply();
+                    mPrefs.putString(Config.SP_ADS_ID,advertId);
                     //Toast.makeText(getApplicationContext(), advertId, Toast.LENGTH_SHORT).show();
                 }
             };
@@ -106,6 +109,24 @@ public class MainActivity extends AppCompatActivity
                 inspeckage.mkdirs();
             }
             hideItem();
+        }
+
+        setWorldReadable();
+    }
+
+    @SuppressWarnings({"deprecation", "ResultOfMethodCallIgnored"})
+    @SuppressLint({"SetWorldReadable", "WorldReadableFiles"})
+    private void setWorldReadable() {
+        File dataDir = new File(getApplicationInfo().dataDir);
+        File prefsDir = new File(dataDir, "shared_prefs");
+        File prefsFile = new File(prefsDir, Module.PREFS+".xml");
+        Log.d("Q_M", "if 设置 文件可读 之前" + prefsFile);
+        if (prefsFile.exists()) {
+            Log.d("Q_M", "for 循环设置 文件可读 之前");
+            for (File file : new File[]{dataDir, prefsDir, prefsFile}) {
+                file.setReadable(true, false);
+                file.setExecutable(true, false);
+            }
         }
     }
 
@@ -238,55 +259,53 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void clearAll(){
-        SharedPreferences.Editor edit = mPrefs.edit();
 
         String appPath = Environment.getExternalStorageDirectory().getAbsolutePath();
         if (!mPrefs.getBoolean(Config.SP_HAS_W_PERMISSION, false)) {
             appPath = mPrefs.getString(Config.SP_DATA_DIR, "");
         }
 
-        edit.putString(Config.SP_PROXY_HOST, "");
-        edit.putString(Config.SP_PROXY_PORT, "");
-        edit.putBoolean(Config.SP_SWITCH_PROXY, false);
-        edit.putBoolean(Config.SP_FLAG_SECURE, false);
-        edit.putBoolean(Config.SP_UNPINNING, false);
-        edit.putBoolean(Config.SP_EXPORTED, false);
-        edit.putBoolean(Config.SP_HAS_W_PERMISSION, true);
-        edit.putString(Config.SP_SERVER_HOST, null);
-        edit.putString(Config.SP_SERVER_PORT, null);
-        edit.putString(Config.SP_SERVER_IP, null);
-        edit.putString(Config.SP_SERVER_INTERFACES, "");
+        mPrefs.putString(Config.SP_PROXY_HOST, "");
+        mPrefs.putString(Config.SP_PROXY_PORT, "");
+        mPrefs.putBoolean(Config.SP_SWITCH_PROXY, false);
+        mPrefs.putBoolean(Config.SP_FLAG_SECURE, false);
+        mPrefs.putBoolean(Config.SP_UNPINNING, false);
+        mPrefs.putBoolean(Config.SP_EXPORTED, false);
+        mPrefs.putBoolean(Config.SP_HAS_W_PERMISSION, true);
+        mPrefs.putString(Config.SP_SERVER_HOST, null);
+        mPrefs.putString(Config.SP_SERVER_PORT, null);
+        mPrefs.putString(Config.SP_SERVER_IP, null);
+        mPrefs.putString(Config.SP_SERVER_INTERFACES, "");
 
-        edit.putString(Config.SP_PACKAGE, "");
-        edit.putString(Config.SP_APP_NAME, "");
-        edit.putString(Config.SP_APP_VERSION, "");
-        edit.putString(Config.SP_DEBUGGABLE, "");
-        edit.putString(Config.SP_APK_DIR, "");
-        edit.putString(Config.SP_UID, "");
-        edit.putString(Config.SP_GIDS, "");
-        edit.putString(Config.SP_DATA_DIR, "");
+        mPrefs.putString(Config.SP_PACKAGE, "");
+        mPrefs.putString(Config.SP_APP_NAME, "");
+        mPrefs.putString(Config.SP_APP_VERSION, "");
+        mPrefs.putString(Config.SP_DEBUGGABLE, "");
+        mPrefs.putString(Config.SP_APK_DIR, "");
+        mPrefs.putString(Config.SP_UID, "");
+        mPrefs.putString(Config.SP_GIDS, "");
+        mPrefs.putString(Config.SP_DATA_DIR, "");
         //white img
-        edit.putString(Config.SP_APP_ICON_BASE64, "iVBORw0KGgoAAAANSUhEUgAAABoAAAAbCAIAAADtdAg8AAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAJUlEQVRIiWP8//8/A/UAExXNGjVu1LhR40aNGzVu1LhR44aScQDKygMz8IbG2QAAAABJRU5ErkJggg==");
+        mPrefs.putString(Config.SP_APP_ICON_BASE64, "iVBORw0KGgoAAAANSUhEUgAAABoAAAAbCAIAAADtdAg8AAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAJUlEQVRIiWP8//8/A/UAExXNGjVu1LhR40aNGzVu1LhR44aScQDKygMz8IbG2QAAAABJRU5ErkJggg==");
 
-        edit.putString(Config.SP_EXP_ACTIVITIES, "");
-        edit.putString(Config.SP_N_EXP_ACTIVITIES, "");
-        edit.putString(Config.SP_REQ_PERMISSIONS, "");
-        edit.putString(Config.SP_APP_PERMISSIONS, "");
-        edit.putString(Config.SP_N_EXP_PROVIDER, "");
-        edit.putString(Config.SP_N_EXP_SERVICES, "");
-        edit.putString(Config.SP_N_EXP_BROADCAST, "");
+        mPrefs.putString(Config.SP_EXP_ACTIVITIES, "");
+        mPrefs.putString(Config.SP_N_EXP_ACTIVITIES, "");
+        mPrefs.putString(Config.SP_REQ_PERMISSIONS, "");
+        mPrefs.putString(Config.SP_APP_PERMISSIONS, "");
+        mPrefs.putString(Config.SP_N_EXP_PROVIDER, "");
+        mPrefs.putString(Config.SP_N_EXP_SERVICES, "");
+        mPrefs.putString(Config.SP_N_EXP_BROADCAST, "");
 
-        edit.putString(Config.SP_EXP_SERVICES, "");
-        edit.putString(Config.SP_EXP_BROADCAST, "");
-        edit.putString(Config.SP_EXP_PROVIDER, "");
-        edit.putString(Config.SP_SHARED_LIB, "");
+        mPrefs.putString(Config.SP_EXP_SERVICES, "");
+        mPrefs.putString(Config.SP_EXP_BROADCAST, "");
+        mPrefs.putString(Config.SP_EXP_PROVIDER, "");
+        mPrefs.putString(Config.SP_SHARED_LIB, "");
 
-        edit.putBoolean(Config.SP_APP_IS_RUNNING, false);
-        edit.putString(Config.SP_DATA_DIR_TREE, "");
+        mPrefs.putBoolean(Config.SP_APP_IS_RUNNING, false);
+        mPrefs.putString(Config.SP_DATA_DIR_TREE, "");
 
-        edit.putString(Config.SP_USER_HOOKS, "");
+        mPrefs.putString(Config.SP_USER_HOOKS, "");
 
-        edit.apply();
 
         File root = new File(appPath + Config.P_ROOT);
         FileUtil.deleteRecursive(root);

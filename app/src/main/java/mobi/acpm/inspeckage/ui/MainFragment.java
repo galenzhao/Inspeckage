@@ -34,6 +34,7 @@ import java.util.List;
 
 import mobi.acpm.inspeckage.Module;
 import mobi.acpm.inspeckage.R;
+import mobi.acpm.inspeckage.preferences.InspeckagePreferences;
 import mobi.acpm.inspeckage.util.Config;
 import mobi.acpm.inspeckage.util.PackageDetail;
 import mobi.acpm.inspeckage.util.Util;
@@ -46,7 +47,7 @@ public class MainFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private Context context;
     private Activity mainActivity;
-    private SharedPreferences mPrefs;
+    private InspeckagePreferences mPrefs;
     private PackageDetail pd;
 
     @SuppressLint("ValidFragment")
@@ -63,7 +64,7 @@ public class MainFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            mPrefs = context.getSharedPreferences(Module.PREFS, context.MODE_PRIVATE);
+            mPrefs = new InspeckagePreferences(context);
 
             String host = null;
             if(!mPrefs.getString(Config.SP_SERVER_HOST, "All interfaces").equals("All interfaces")){
@@ -128,15 +129,13 @@ public class MainFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                SharedPreferences.Editor edit = mPrefs.edit();
 
                 //Only User App
                 if (isChecked) {
-                    edit.putBoolean(Config.SP_SWITCH_OUA, true);
+                    mPrefs.putBoolean(Config.SP_SWITCH_OUA, true);
                 } else {
-                    edit.putBoolean(Config.SP_SWITCH_OUA, false);
+                    mPrefs.putBoolean(Config.SP_SWITCH_OUA, false);
                 }
-                edit.apply();
                 loadListView(view);
             }
         });
@@ -175,9 +174,7 @@ public class MainFragment extends Fragment {
             String ip = mPrefs.getString(Config.SP_SERVER_HOST, "127.0.0.1");
             host = scheme + ip + ":" + port;
 
-            SharedPreferences.Editor edit = mPrefs.edit();
-            edit.putString(Config.SP_SERVER_IP, ip);
-            edit.apply();
+            mPrefs.putString(Config.SP_SERVER_IP, ip);
         }
 
         TextView txtHost = (TextView) view.findViewById(R.id.txtHost);
@@ -212,9 +209,7 @@ public class MainFragment extends Fragment {
         } catch (SocketException ex) {
             Log.e("Inspeckage_Error", ex.toString());
         }
-        SharedPreferences.Editor edit = mPrefs.edit();
-        edit.putString(Config.SP_SERVER_INTERFACES, sb.toString().substring(0,sb.length()-1));
-        edit.apply();
+        mPrefs.putString(Config.SP_SERVER_INTERFACES, sb.toString().substring(0,sb.length()-1));
     }
     @Override
     public void onDetach() {
@@ -301,53 +296,52 @@ public class MainFragment extends Fragment {
 
     private void loadSelectedApp(String pkg) {
 
-        SharedPreferences.Editor edit = mPrefs.edit();
         //this put has to come before the PackageDetail
-        edit.putString(Config.SP_PACKAGE, pkg);
+        mPrefs.putString(Config.SP_PACKAGE, pkg);
+        
 
         pd = new PackageDetail(context, pkg);
 
-        edit.putBoolean(Config.SP_HAS_W_PERMISSION, false);
+        mPrefs.putBoolean(Config.SP_HAS_W_PERMISSION, false);
         if (pd.getRequestedPermissions().contains("android.permission.WRITE_EXTERNAL_STORAGE") &&
                 Build.VERSION.SDK_INT < 23) {
-            edit.putBoolean(Config.SP_HAS_W_PERMISSION, true);
+            mPrefs.putBoolean(Config.SP_HAS_W_PERMISSION, true);
         }
 
-        edit.putString(Config.SP_APP_NAME, pd.getAppName());
-        edit.putString(Config.SP_APP_ICON_BASE64, pd.getIconBase64());
-        edit.putString(Config.SP_PROCESS_NAME, pd.getProcessName());
-        edit.putString(Config.SP_APP_VERSION, pd.getVersion());
-        edit.putString(Config.SP_DEBUGGABLE, pd.isDebuggable());
-        edit.putString(Config.SP_ALLOW_BACKUP, pd.allowBackup());
-        edit.putString(Config.SP_APK_DIR, pd.getApkDir());
-        edit.putString(Config.SP_UID, pd.getUID());
-        edit.putString(Config.SP_GIDS, pd.getGIDs());
-        edit.putString(Config.SP_DATA_DIR, pd.getDataDir());
+        mPrefs.putString(Config.SP_APP_NAME, pd.getAppName());
+        mPrefs.putString(Config.SP_APP_ICON_BASE64, pd.getIconBase64());
+        mPrefs.putString(Config.SP_PROCESS_NAME, pd.getProcessName());
+        mPrefs.putString(Config.SP_APP_VERSION, pd.getVersion());
+        mPrefs.putString(Config.SP_DEBUGGABLE, pd.isDebuggable());
+        mPrefs.putString(Config.SP_ALLOW_BACKUP, pd.allowBackup());
+        mPrefs.putString(Config.SP_APK_DIR, pd.getApkDir());
+        mPrefs.putString(Config.SP_UID, pd.getUID());
+        mPrefs.putString(Config.SP_GIDS, pd.getGIDs());
+        mPrefs.putString(Config.SP_DATA_DIR, pd.getDataDir());
 
-        edit.putString(Config.SP_REQ_PERMISSIONS, pd.getRequestedPermissions());
-        edit.putString(Config.SP_APP_PERMISSIONS, pd.getAppPermissions());
+        mPrefs.putString(Config.SP_REQ_PERMISSIONS, pd.getRequestedPermissions());
+        mPrefs.putString(Config.SP_APP_PERMISSIONS, pd.getAppPermissions());
 
-        edit.putString(Config.SP_EXP_ACTIVITIES, pd.getExportedActivities());
-        edit.putString(Config.SP_N_EXP_ACTIVITIES, pd.getNonExportedActivities());
+        mPrefs.putString(Config.SP_EXP_ACTIVITIES, pd.getExportedActivities());
+        mPrefs.putString(Config.SP_N_EXP_ACTIVITIES, pd.getNonExportedActivities());
 
-        edit.putString(Config.SP_EXP_SERVICES, pd.getExportedServices());
-        edit.putString(Config.SP_N_EXP_SERVICES, pd.getNonExportedServices());
+        mPrefs.putString(Config.SP_EXP_SERVICES, pd.getExportedServices());
+        mPrefs.putString(Config.SP_N_EXP_SERVICES, pd.getNonExportedServices());
 
-        edit.putString(Config.SP_EXP_BROADCAST, pd.getExportedBroadcastReceivers());
-        edit.putString(Config.SP_N_EXP_BROADCAST, pd.getNonExportedBroadcastReceivers());
+        mPrefs.putString(Config.SP_EXP_BROADCAST, pd.getExportedBroadcastReceivers());
+        mPrefs.putString(Config.SP_N_EXP_BROADCAST, pd.getNonExportedBroadcastReceivers());
 
-        edit.putString(Config.SP_EXP_PROVIDER, pd.getExportedContentProvider());
-        edit.putString(Config.SP_N_EXP_PROVIDER, pd.getNonExportedContentProvider());
+        mPrefs.putString(Config.SP_EXP_PROVIDER, pd.getExportedContentProvider());
+        mPrefs.putString(Config.SP_N_EXP_PROVIDER, pd.getNonExportedContentProvider());
 
-        edit.putString(Config.SP_SHARED_LIB, pd.getSharedLibraries());
+        mPrefs.putString(Config.SP_SHARED_LIB, pd.getSharedLibraries());
 
-        edit.putBoolean(Config.SP_APP_IS_RUNNING, false);
-        edit.putString(Config.SP_DATA_DIR_TREE, "");
+        mPrefs.putBoolean(Config.SP_APP_IS_RUNNING, false);
+        mPrefs.putString(Config.SP_DATA_DIR_TREE, "");
 
         //test
-        //edit.putString(Config.SP_REPLACE_SP, "limitEventUsage,true");
+        //mPrefs.putString(Config.SP_REPLACE_SP, "limitEventUsage,true");
 
-        edit.apply();
 
         //resolve this problem
         if (pd.getRequestedPermissions().contains("android.permission.WRITE_EXTERNAL_STORAGE")) {

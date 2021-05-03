@@ -25,6 +25,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import mobi.acpm.inspeckage.Module;
+import mobi.acpm.inspeckage.preferences.InspeckagePreferences;
 
 /**
  * Created by acpm on 29/11/15.
@@ -40,7 +41,7 @@ public class FileUtil {
         (new File(mPrefFile)).setReadable(true, false);
     }
 
-    public static void writeToFile(SharedPreferences prefs, String data, FileType ft, String name) {
+    public static void writeToFile(InspeckagePreferences prefs, String data, FileType ft, String name) {
 
         try {
 
@@ -49,7 +50,7 @@ public class FileUtil {
             if (prefs.getBoolean(Config.SP_HAS_W_PERMISSION,false)) {
                 absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath()+Config.P_ROOT+"/"+prefs.getString(Config.SP_PACKAGE,"");
             } else {
-                absolutePath = prefs.getString(Config.SP_DATA_DIR, null)+Config.P_ROOT;
+                absolutePath = prefs.getString(Config.SP_DATA_DIR, "")+Config.P_ROOT;
             }
             boolean append = true;
             if (ft != null) {
@@ -160,7 +161,7 @@ public class FileUtil {
         }
     }
 
-    public static String readFromFile(SharedPreferences prefs, FileType ft) {
+    public static String readFromFile(InspeckagePreferences prefs, FileType ft) {
 
         String text = "";
         try {
@@ -170,7 +171,7 @@ public class FileUtil {
             if (prefs.getBoolean(Config.SP_HAS_W_PERMISSION, false)) {
                 absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath()+Config.P_ROOT+"/"+prefs.getString(Config.SP_PACKAGE,"");
             } else {
-                absolutePath = prefs.getString(Config.SP_DATA_DIR, null)+Config.P_ROOT;
+                absolutePath = prefs.getString(Config.SP_DATA_DIR, "")+Config.P_ROOT;
             }
 
             switch (ft) {
@@ -261,7 +262,7 @@ public class FileUtil {
         return text;
     }
 
-    public static Map<String, String> readMultiFile(SharedPreferences prefs, String folderName) {
+    public static Map<String, String> readMultiFile(InspeckagePreferences prefs, String folderName) {
 
         Map<String, String> files = new HashMap<>();
         try {
@@ -271,7 +272,7 @@ public class FileUtil {
             if (prefs.getBoolean(Config.SP_HAS_W_PERMISSION, false)) {
                 absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath()+Config.P_ROOT+"/"+prefs.getString(Config.SP_PACKAGE,"")+"/"+ folderName;
             } else {
-                absolutePath = prefs.getString(Config.SP_DATA_DIR, null)+Config.P_ROOT+"/"+folderName;
+                absolutePath = prefs.getString(Config.SP_DATA_DIR, "")+Config.P_ROOT+"/"+folderName;
             }
 
             File folder = new File(absolutePath);
