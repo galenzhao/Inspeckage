@@ -7,6 +7,7 @@ import de.robv.android.xposed.*
 import de.robv.android.xposed.IXposedHookZygoteInit.StartupParam
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import mobi.acpm.inspeckage.hooks.*
+import mobi.acpm.inspeckage.hooks.entities.LocationHook
 import mobi.acpm.inspeckage.preferences.InspeckagePreferences
 import mobi.acpm.inspeckage.util.Config
 import mobi.acpm.inspeckage.util.Config.SP_DATA_DIR
@@ -124,40 +125,44 @@ class Module : XC_MethodHook(), IXposedHookLoadPackage, IXposedHookZygoteInit {
                     MiscHook.initAllHooks(loadPackageParam)
                     ClipboardHook.initAllHooks(loadPackageParam)
                 }
-//                if (sPrefs.getBoolean(Config.SP_TAB_ENABLE_WV, true)) {
-//                    WebViewHook.initAllHooks(loadPackageParam)
-//                }
-//                if (sPrefs.getBoolean(Config.SP_TAB_ENABLE_CRYPTO, true)) {
-//                    CryptoHook.initAllHooks(loadPackageParam)
-//                }
+                if (sPrefs.getBoolean(Config.SP_TAB_ENABLE_WV, true)) {
+                    WebViewHook.initAllHooks(loadPackageParam)
+                }
+                if (sPrefs.getBoolean(Config.SP_TAB_ENABLE_CRYPTO, true)) {
+                    CryptoHook.initAllHooks(loadPackageParam)
+                }
+                //闪退
 //                if (sPrefs.getBoolean(Config.SP_TAB_ENABLE_FS, true)) {
 //                    FileSystemHook.initAllHooks(loadPackageParam)
 //                }
-//                FlagSecureHook.initAllHooks(loadPackageParam)
-//                if (sPrefs.getBoolean(Config.SP_TAB_ENABLE_HASH, true)) {
-//                    HashHook.initAllHooks(loadPackageParam)
-//                }
-//                if (sPrefs.getBoolean(Config.SP_TAB_ENABLE_IPC, true)) {
-////                    IPCHook.initAllHooks(loadPackageParam)
-//                }
-////                ProxyHook.initAllHooks(loadPackageParam) // --
+                FlagSecureHook.initAllHooks(loadPackageParam)
+                if (sPrefs.getBoolean(Config.SP_TAB_ENABLE_HASH, true)) {
+                    HashHook.initAllHooks(loadPackageParam)
+                }
+                if (sPrefs.getBoolean(Config.SP_TAB_ENABLE_IPC, true)) {
+                    IPCHook.initAllHooks(loadPackageParam)
+                }
+                ProxyHook.initAllHooks(loadPackageParam) // --
                 if (sPrefs.getBoolean(Config.SP_TAB_ENABLE_SHAREDP, true)) {
                     SharedPrefsHook.initAllHooks(loadPackageParam,sPrefs)
                 }
-//                if (sPrefs.getBoolean(Config.SP_TAB_ENABLE_SQLITE, true)) {
-//                    SQLiteHook.initAllHooks(loadPackageParam)
-//                }
-//                SSLPinningHook.initAllHooks(loadPackageParam) // --
+                if (sPrefs.getBoolean(Config.SP_TAB_ENABLE_SQLITE, true)) {
+                    SQLiteHook.initAllHooks(loadPackageParam)
+                }
+                SSLPinningHook.initAllHooks(loadPackageParam) // --
+
+                //奔溃
 //                if (sPrefs.getBoolean(Config.SP_TAB_ENABLE_SERIALIZATION, true)) {
 //                    SerializationHook.initAllHooks(loadPackageParam)
 //                }
-//                if (sPrefs.getBoolean(Config.SP_TAB_ENABLE_PHOOKS, true)) {
-////                    UserHooks.initAllHooks(loadPackageParam)
-//                }
-//                if (sPrefs.getBoolean(Config.SP_GEOLOCATION_SW, false)) {
-////                    LocationHook.initAllHooks(loadPackageParam)
-//                }
-//                FingerprintHook.initAllHooks(loadPackageParam)
+
+                if (sPrefs.getBoolean(Config.SP_TAB_ENABLE_PHOOKS, true)) {
+                    UserHooks.initAllHooks(loadPackageParam)
+                }
+                if (sPrefs.getBoolean(Config.SP_GEOLOCATION_SW, false)) {
+                    LocationHook.initAllHooks(loadPackageParam)
+                }
+                FingerprintHook.initAllHooks(loadPackageParam)
 
                 //DexUtil.saveClassesWithMethodsJson(loadPackageParam, sPrefs);
                 Log.i(TAG, "handleLoadPackage: end")
