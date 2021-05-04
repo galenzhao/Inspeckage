@@ -5,6 +5,7 @@ import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import mobi.acpm.inspeckage.Module;
+import mobi.acpm.inspeckage.preferences.InspeckagePreferences;
 
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 
@@ -15,15 +16,12 @@ import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 public class LocationHook extends XC_MethodHook {
 
     public static final String TAG = "Inspeckage_Location: ";
-    private static XSharedPreferences sPrefs;
+    private static InspeckagePreferences sPrefs;
 
-    public static void loadPrefs() {
-        sPrefs = new XSharedPreferences(Module.class.getPackage().getName(), Module.PREFS);
-        sPrefs.makeWorldReadable();
-    }
 
-    public static void initAllHooks(final XC_LoadPackage.LoadPackageParam loadPackageParam) {
+    public static void initAllHooks(final XC_LoadPackage.LoadPackageParam loadPackageParam, InspeckagePreferences prefs) {
 
+        sPrefs = prefs;
         try {
             Class<?> location = XposedHelpers.findClass("android.location.Location", loadPackageParam.classLoader);
 
@@ -34,7 +32,6 @@ public class LocationHook extends XC_MethodHook {
                         throws Throwable {
                     super.afterHookedMethod(param);
 
-                    loadPrefs();
                     String geolocation = sPrefs.getString("geoloc", "");
                     if (!geolocation.equals("") && geolocation.contains(",")) {
                         final String[] latlng = geolocation.split(",");
@@ -49,7 +46,6 @@ public class LocationHook extends XC_MethodHook {
                 protected void afterHookedMethod(MethodHookParam param)
                         throws Throwable {
                     super.afterHookedMethod(param);
-                    loadPrefs();
                     String geolocation = sPrefs.getString("geoloc", "");
                     if (!geolocation.equals("") && geolocation.contains(",")) {
                         final String[] latlng = geolocation.split(",");

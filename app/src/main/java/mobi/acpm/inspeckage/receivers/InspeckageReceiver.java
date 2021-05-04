@@ -17,6 +17,8 @@ import mobi.acpm.inspeckage.util.Util;
 
 /**
  * Created by acpm on 17/01/16.
+ *
+ * 网页操作app，通过这个广播来响应
  */
 public class InspeckageReceiver extends BroadcastReceiver {
 

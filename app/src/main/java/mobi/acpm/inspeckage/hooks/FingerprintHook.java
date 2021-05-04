@@ -16,6 +16,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import mobi.acpm.inspeckage.Module;
 import mobi.acpm.inspeckage.hooks.entities.FingerprintItem;
 import mobi.acpm.inspeckage.hooks.entities.FingerprintList;
+import mobi.acpm.inspeckage.preferences.InspeckagePreferences;
 import mobi.acpm.inspeckage.util.Util;
 
 import static de.robv.android.xposed.XposedBridge.log;
@@ -27,21 +28,16 @@ import static de.robv.android.xposed.XposedBridge.log;
 public class FingerprintHook extends XC_MethodHook {
 
     public static final String TAG = "Inspeckage_DeviceData: ";
-    private static XSharedPreferences sPrefs;
+    private static InspeckagePreferences sPrefs;
     private static Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 
-    public static void loadPrefs() {
-        sPrefs = new XSharedPreferences(Module.class.getPackage().getName(), Module.PREFS);
-        sPrefs.makeWorldReadable();
-    }
 
-    public static void initAllHooks(final XC_LoadPackage.LoadPackageParam loadPackageParam) {
-        loadPrefs();
+    public static void initAllHooks(final XC_LoadPackage.LoadPackageParam loadPackageParam, InspeckagePreferences prefs) {
 
+        sPrefs = prefs;
         try {
 
-            loadPrefs();
-
+            
             String json = sPrefs.getString("fingerprint_hooks", "");
             Class<?> classBuild = XposedHelpers.findClass("android.os.Build", loadPackageParam.classLoader);
             Class<?> classBuildVersion = XposedHelpers.findClass("android.os.Build.VERSION", loadPackageParam.classLoader);

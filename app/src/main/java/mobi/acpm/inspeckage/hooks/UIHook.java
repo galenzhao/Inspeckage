@@ -20,6 +20,7 @@ public class UIHook extends XC_MethodHook {
 
     public static final String TAG = "Inspeckage_GUI:";
 
+    // TODO: 5/4/21 应该改为在Application 里注册，不然会多次注册
     public static void initAllHooks(final XC_LoadPackage.LoadPackageParam loadPackageParam) {
 
         findAndHookMethod(Activity.class, "onCreate", Bundle.class, new XC_MethodHook() {

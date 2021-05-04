@@ -102,8 +102,9 @@ public class CryptoHook extends XC_MethodHook {
         findAndHookConstructor(PBEKeySpec.class, char[].class, byte[].class, int.class, int.class, new XC_MethodHook() {
 
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                if (sb == null)
+                if (sb == null){
                     sb = new StringBuffer();
+                }
 
                 sb.append("[PBEKeySpec] - Password: " + String.valueOf((char[])param.args[0]) + " || Salt: " +  Util.byteArrayToString((byte[])param.args[1]));
                 XposedBridge.log(TAG + sb.toString());

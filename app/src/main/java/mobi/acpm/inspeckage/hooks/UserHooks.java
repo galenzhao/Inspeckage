@@ -17,6 +17,7 @@ import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import mobi.acpm.inspeckage.Module;
+import mobi.acpm.inspeckage.preferences.InspeckagePreferences;
 import mobi.acpm.inspeckage.util.Config;
 import mobi.acpm.inspeckage.util.Replacement;
 import mobi.acpm.inspeckage.util.Util;
@@ -31,16 +32,12 @@ public class UserHooks extends XC_MethodHook {
 
     public static final String TAG = "Inspeckage_UserHooks:";
     private static Gson gson = new GsonBuilder().disableHtmlEscaping().create();//new Gson();
-    private static XSharedPreferences sPrefs;
+    private static InspeckagePreferences sPrefs;
     private static XC_LoadPackage.LoadPackageParam lpp;
 
-    public static void loadPrefs() {
-        sPrefs = new XSharedPreferences(Module.class.getPackage().getName(), Module.PREFS);
-        sPrefs.makeWorldReadable();
-    }
 
-    public static void initAllHooks(final XC_LoadPackage.LoadPackageParam loadPackageParam) {
-        loadPrefs();
+    public static void initAllHooks(final XC_LoadPackage.LoadPackageParam loadPackageParam, InspeckagePreferences prefs) {
+        sPrefs = prefs;
         lpp = loadPackageParam;
         String json = "{\"hookJson\": " + sPrefs.getString(Config.SP_USER_HOOKS, "") + "}";
         try {
@@ -93,12 +90,12 @@ public class UserHooks extends XC_MethodHook {
     static XC_MethodHook methodHook = new XC_MethodHook() {
 
         protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-            loadPrefs();
+            
             Replacement.parameterReplace(param, sPrefs);
         }
 
         protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-            loadPrefs();
+            
             Replacement.resultReplace(param, sPrefs);
             parseParam(param);
         }

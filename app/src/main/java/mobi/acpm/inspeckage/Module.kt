@@ -84,7 +84,7 @@ class Module : XC_MethodHook(), IXposedHookLoadPackage, IXposedHookZygoteInit {
                         val tag = param.args[0]
                         if (param.args[0] === "Xposed" || param.args[0] == "EdXposed-Bridge") {
                             val log = param.args[1] as String
-                            Log.d(TAG, "android.util.Log: tag=$tag,log=$log")
+//                            Log.d(TAG, "android.util.Log: tag=$tag,log=$log")
                             var ft: FileType? = null
                             if (log.contains(SharedPrefsHook.TAG)) { //5
                                 ft = FileType.PREFS
@@ -135,7 +135,7 @@ class Module : XC_MethodHook(), IXposedHookLoadPackage, IXposedHookZygoteInit {
 //                if (sPrefs.getBoolean(Config.SP_TAB_ENABLE_FS, true)) {
 //                    FileSystemHook.initAllHooks(loadPackageParam)
 //                }
-                FlagSecureHook.initAllHooks(loadPackageParam)
+                FlagSecureHook.initAllHooks(loadPackageParam, sPrefs)
                 if (sPrefs.getBoolean(Config.SP_TAB_ENABLE_HASH, true)) {
                     HashHook.initAllHooks(loadPackageParam)
                 }
@@ -149,20 +149,23 @@ class Module : XC_MethodHook(), IXposedHookLoadPackage, IXposedHookZygoteInit {
                 if (sPrefs.getBoolean(Config.SP_TAB_ENABLE_SQLITE, true)) {
                     SQLiteHook.initAllHooks(loadPackageParam)
                 }
-                SSLPinningHook.initAllHooks(loadPackageParam) // --
+                SSLPinningHook.initAllHooks(loadPackageParam, sPrefs) // --
 
                 //奔溃
 //                if (sPrefs.getBoolean(Config.SP_TAB_ENABLE_SERIALIZATION, true)) {
 //                    SerializationHook.initAllHooks(loadPackageParam)
 //                }
 
+                //自定义hook
                 if (sPrefs.getBoolean(Config.SP_TAB_ENABLE_PHOOKS, true)) {
-                    UserHooks.initAllHooks(loadPackageParam)
+                    UserHooks.initAllHooks(loadPackageParam, sPrefs)
                 }
                 if (sPrefs.getBoolean(Config.SP_GEOLOCATION_SW, false)) {
-                    LocationHook.initAllHooks(loadPackageParam)
+                    LocationHook.initAllHooks(loadPackageParam, sPrefs)
                 }
-                FingerprintHook.initAllHooks(loadPackageParam)
+
+                //hook设备相关
+                FingerprintHook.initAllHooks(loadPackageParam, sPrefs)
 
                 //DexUtil.saveClassesWithMethodsJson(loadPackageParam, sPrefs);
                 Log.i(TAG, "handleLoadPackage: end")

@@ -6,6 +6,7 @@ import java.util.List;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
+import mobi.acpm.inspeckage.preferences.InspeckagePreferences;
 
 /**
  * Created by acpm on 30/10/16.
@@ -16,7 +17,7 @@ public class Replacement {
     private static Gson gson = new Gson();
     public static final String TAG = "Inspeckage_Replacement:";
 
-    public static boolean parameterReplace(XC_MethodHook.MethodHookParam param, XSharedPreferences sPrefs) {
+    public static boolean parameterReplace(XC_MethodHook.MethodHookParam param, InspeckagePreferences sPrefs) {
 
         String user_json = sPrefs.getString(Config.SP_USER_REPLACES, "");
         if (!user_json.trim().equals("")) {
@@ -205,7 +206,7 @@ public class Replacement {
         return true;
     }
 
-    public static boolean resultReplace(XC_MethodHook.MethodHookParam param, XSharedPreferences sPrefs) {
+    public static boolean resultReplace(XC_MethodHook.MethodHookParam param, InspeckagePreferences sPrefs) {
 
         String user_json = sPrefs.getString(Config.SP_USER_RETURN_REPLACES, "");
         if (!user_json.trim().equals("")) {

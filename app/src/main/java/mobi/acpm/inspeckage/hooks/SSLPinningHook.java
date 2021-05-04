@@ -19,6 +19,7 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import mobi.acpm.inspeckage.Module;
+import mobi.acpm.inspeckage.preferences.InspeckagePreferences;
 
 import static de.robv.android.xposed.XposedHelpers.callMethod;
 import static de.robv.android.xposed.XposedHelpers.callStaticMethod;
@@ -37,15 +38,11 @@ import static de.robv.android.xposed.XposedHelpers.setObjectField;
 public class SSLPinningHook extends XC_MethodHook {
 
     public static final String TAG = "Inspeckage_SSLPinning:";
-    private static XSharedPreferences sPrefs;
+    private static InspeckagePreferences sPrefs;
 
-    public static void loadPrefs() {
-        sPrefs = new XSharedPreferences(Module.class.getPackage().getName(), Module.PREFS);
-        sPrefs.makeWorldReadable();
-    }
+    public static void initAllHooks(final XC_LoadPackage.LoadPackageParam loadPackageParam, InspeckagePreferences prefs) {
 
-    public static void initAllHooks(final XC_LoadPackage.LoadPackageParam loadPackageParam) {
-
+        sPrefs = prefs;
         // --- Java Secure Socket Extension (JSSE) ---
 
         //TrustManagerFactory.getTrustManagers >> EmptyTrustManager
@@ -53,7 +50,6 @@ public class SSLPinningHook extends XC_MethodHook {
 
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                loadPrefs();
                 if (sPrefs.getBoolean("sslunpinning", false)) {
                     TrustManager[] tms = EmptyTrustManager.getInstance();
                     param.setResult(tms);
@@ -66,7 +62,6 @@ public class SSLPinningHook extends XC_MethodHook {
 
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                loadPrefs();
                 if (sPrefs.getBoolean("sslunpinning", false)) {
                     param.args[0] = null;
                     param.args[1] = EmptyTrustManager.getInstance();
@@ -79,7 +74,6 @@ public class SSLPinningHook extends XC_MethodHook {
         findAndHookMethod("javax.net.ssl.HttpsURLConnection", loadPackageParam.classLoader, "setSSLSocketFactory", javax.net.ssl.SSLSocketFactory.class, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                loadPrefs();
                 if (sPrefs.getBoolean("sslunpinning", false)) {
                     param.args[0] = newInstance(javax.net.ssl.SSLSocketFactory.class);
                 }
@@ -98,7 +92,7 @@ public class SSLPinningHook extends XC_MethodHook {
                             HostnameVerifier.class, new XC_MethodHook() {
                                 @Override
                                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                    loadPrefs();
+                                    
                                     if (sPrefs.getBoolean("sslunpinning", false)) {
                                         param.args[0] = SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
                                     }
@@ -115,7 +109,7 @@ public class SSLPinningHook extends XC_MethodHook {
                             new XC_MethodHook() {
                                 @Override
                                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                    loadPrefs();
+                                    
                                     if (sPrefs.getBoolean("sslunpinning", false)) {
                                         param.args[0] = SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
                                     }
@@ -130,7 +124,7 @@ public class SSLPinningHook extends XC_MethodHook {
                     findAndHookMethod("org.apache.http.conn.ssl.SSLSocketFactory", loadPackageParam.classLoader, "getSocketFactory", new XC_MethodHook() {
                         @Override
                         protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                            loadPrefs();
+                            
                             if (sPrefs.getBoolean("sslunpinning", false)) {
                                 param.setResult((SSLSocketFactory) newInstance(SSLSocketFactory.class));
                             }
@@ -148,7 +142,7 @@ public class SSLPinningHook extends XC_MethodHook {
                                 @Override
                                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 
-                                    loadPrefs();
+                                    
                                     if (sPrefs.getBoolean("sslunpinning", false)) {
                                         String algorithm = (String) param.args[0];
                                         KeyStore keystore = (KeyStore) param.args[1];
@@ -180,7 +174,7 @@ public class SSLPinningHook extends XC_MethodHook {
                     findAndHookMethod("org.apache.http.conn.ssl.SSLSocketFactory", loadPackageParam.classLoader, "isSecure", Socket.class, new XC_MethodHook() {
                         @Override
                         protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                            loadPrefs();
+                            
                             if (sPrefs.getBoolean("sslunpinning", false)) {
                                 param.setResult(true);
                             }
@@ -198,7 +192,7 @@ public class SSLPinningHook extends XC_MethodHook {
         try {
             findAndHookMethod("okhttp3.CertificatePinner", loadPackageParam.classLoader, "findMatchingPins", String.class, new XC_MethodHook() {
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    loadPrefs();
+                    
                     if (sPrefs.getBoolean("sslunpinning", false)) {
                         param.args[0] = "";
                     }
