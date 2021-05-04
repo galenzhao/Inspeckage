@@ -128,23 +128,24 @@ public class HttpHook extends XC_MethodHook {
         };
 
         try {
-            final Class<?> okHttpClient = findClass("com.android.okhttp.OkHttpClient", loadPackageParam.classLoader);
+            final Class<?> okHttpClient = findClass("okhttp3.OkHttpClient", loadPackageParam.classLoader);
             if(okHttpClient != null) {
 
                 //
-                findAndHookMethod(okHttpClient, "open", URI.class, new XC_MethodHook() {
+                final Class<?> Request = findClass("okhttp3.Request", loadPackageParam.classLoader);
+
+                Log.i(TAG, "initAllHooks: findAndHookMethod OkHttpClient");
+                findAndHookMethod(okHttpClient, "newCall", Request, new XC_MethodHook() {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                        URI uri = null;
-                        if (param.args[0] != null)
-                            uri = (URI) param.args[0];
-                        XposedBridge.log(TAG + "OkHttpClient: " + uri.toString() + "");
+                        XposedBridge.log(TAG + "OkHttpClient: " + param.args[0].toString() + "");
 
-                        Log.i(TAG, "findAndHookMethod,okHttpClient");
+                        Log.i(TAG, "findAndHookMethod,newCall:request=" + param.args[0].toString() );
                     }
                 });
             }
         } catch (Error e) {
+            Log.e(TAG, "initAllHooks: e="+e.getMessage() );
             Module.logError(e);
         }
 

@@ -38,6 +38,7 @@ import mobi.acpm.inspeckage.Module;
 import mobi.acpm.inspeckage.R;
 import mobi.acpm.inspeckage.preferences.InspeckagePreferences;
 import mobi.acpm.inspeckage.util.Config;
+import mobi.acpm.inspeckage.util.FileUtil;
 import mobi.acpm.inspeckage.util.PackageDetail;
 import mobi.acpm.inspeckage.util.Util;
 import mobi.acpm.inspeckage.webserver.InspeckageService;
@@ -325,6 +326,7 @@ public class MainFragment extends Fragment {
 
         //todo 换app，清除历史
 //        File file = new File(absolutePath);
+        clear();
 
         mPrefs.putString(Config.SP_DATA_DIR, absolutePath);
 
@@ -357,6 +359,13 @@ public class MainFragment extends Fragment {
             pd.extractInfoToFile();
         }
 
+    }
+
+    private void clear(){
+        String appPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+        File root = new File(appPath + Config.P_ROOT);
+        FileUtil.deleteRecursive(root);
+        Log.i("TAG", "clearAll: end,root=" + root.getAbsolutePath());
     }
 
 

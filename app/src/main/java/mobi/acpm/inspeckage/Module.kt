@@ -142,7 +142,7 @@ class Module : XC_MethodHook(), IXposedHookLoadPackage, IXposedHookZygoteInit {
                 if (sPrefs.getBoolean(Config.SP_TAB_ENABLE_IPC, true)) {
                     IPCHook.initAllHooks(loadPackageParam)
                 }
-                ProxyHook.initAllHooks(loadPackageParam) // --
+                ProxyHook.initAllHooks(loadPackageParam,sPrefs) // --
                 if (sPrefs.getBoolean(Config.SP_TAB_ENABLE_SHAREDP, true)) {
                     SharedPrefsHook.initAllHooks(loadPackageParam,sPrefs)
                 }
