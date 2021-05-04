@@ -1,6 +1,7 @@
 package mobi.acpm.inspeckage.hooks;
 
 import android.os.Build;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -37,8 +38,9 @@ public class FingerprintHook extends XC_MethodHook {
         sPrefs = prefs;
         try {
 
-            
+
             String json = sPrefs.getString("fingerprint_hooks", "");
+            Log.d(TAG, "initAllHooks: json=" + json);
             Class<?> classBuild = XposedHelpers.findClass("android.os.Build", loadPackageParam.classLoader);
             Class<?> classBuildVersion = XposedHelpers.findClass("android.os.Build.VERSION", loadPackageParam.classLoader);
 
@@ -51,15 +53,15 @@ public class FingerprintHook extends XC_MethodHook {
                             if (fingerprintItem.type.equals("BUILD")) {
                                 XposedHelpers.setStaticObjectField(classBuild, fingerprintItem.name, fingerprintItem.newValue);
                             } else if (fingerprintItem.type.equals("VERSION")) {
-                                XposedHelpers.setStaticObjectField(classBuildVersion, fingerprintItem.name, fingerprintItem.newValue);
+                                XposedHelpers.setStaticObjectField(classBuildVersion, fingerprintItem.name, Integer.parseInt(fingerprintItem.newValue));
                             } else if (fingerprintItem.type.equals("TelephonyManager")) {
 
                                 try {
                                     switch (fingerprintItem.name) {
                                         case "IMEI":
                                             HookFingerprintItem("android.telephony.TelephonyManager", loadPackageParam, "getDeviceId", fingerprintItem.newValue);
-                                            HookFingerprintItem("com.android.internal.telephony.PhoneSubInfo", loadPackageParam, "getDeviceId", fingerprintItem.newValue);
-                                            HookFingerprintItem("com.android.internal.telephony.PhoneProxy", loadPackageParam, "getDeviceId", fingerprintItem.newValue);
+//                                            HookFingerprintItem("com.android.internal.telephony.PhoneSubInfo", loadPackageParam, "getDeviceId", fingerprintItem.newValue);
+//                                            HookFingerprintItem("com.android.internal.telephony.PhoneProxy", loadPackageParam, "getDeviceId", fingerprintItem.newValue);
                                             if (Build.VERSION.SDK_INT < 22) {
                                                 HookFingerprintItem("com.android.internal.telephony.gsm.GSMPhone", loadPackageParam, "getDeviceId", fingerprintItem.newValue);
                                             }
@@ -144,6 +146,8 @@ public class FingerprintHook extends XC_MethodHook {
                         throws Throwable {
                     super.afterHookedMethod(param);
                     param.setResult(value);
+
+                    Log.i(TAG, "HookFingerprintItem: methodName="+param.method.getName() + ",result="+value);
                 }
 
             });

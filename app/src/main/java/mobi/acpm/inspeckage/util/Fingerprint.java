@@ -20,6 +20,7 @@ import java.util.List;
 import mobi.acpm.inspeckage.Module;
 import mobi.acpm.inspeckage.hooks.entities.FingerprintItem;
 import mobi.acpm.inspeckage.hooks.entities.FingerprintList;
+import mobi.acpm.inspeckage.preferences.InspeckagePreferences;
 
 /**
  * Created by acpm on 20/05/17.
@@ -29,11 +30,11 @@ public class Fingerprint {
 
     private static Fingerprint instance;
     private static Context mContext;
-    private static SharedPreferences mPrefs;
+    private static InspeckagePreferences mPrefs;
 
     public Fingerprint(Context context){
         mContext = context;
-        mPrefs = context.getSharedPreferences(Module.PREFS, context.MODE_PRIVATE);
+        mPrefs = new InspeckagePreferences(context);
     }
     public static Fingerprint getInstance(Context context){
         if (instance == null)
@@ -109,10 +110,8 @@ public class Fingerprint {
 
         Gson gson = new GsonBuilder().create();
 
-        SharedPreferences.Editor editor = mPrefs.edit();
         String json = gson.toJson(list);
-        editor.putString(Config.SP_FINGERPRINT_HOOKS, json);
-        editor.apply();
+        mPrefs.putString(Config.SP_FINGERPRINT_HOOKS, json);
     }
 
     private static String getMacAddress(Context context) {

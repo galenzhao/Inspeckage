@@ -68,30 +68,30 @@ public class ProxyHook extends XC_MethodHook {
             Module.logError(e);
         }
 
-        try {
-            Class<?> DefaultHttpClient = XposedHelpers.findClass("org.apache.http.impl.client.DefaultHttpClient", loadPackageParam.classLoader);
-            hookAllConstructors(DefaultHttpClient, new XC_MethodHook() {
-                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-
-                    if (sPrefs.getBoolean("switch_proxy", false)) {
-                        String proxyHost = sPrefs.getString("host", null);
-                        int proxyPort;
-                        try {
-                            proxyPort = Integer.parseInt(sPrefs.getString("port", null));
-                        } catch (NumberFormatException ex) {
-                            proxyPort = -1;
-                        }
-
-                        DefaultHttpClient httpClient = (DefaultHttpClient) param.thisObject;
-                        HttpHost proxy = new HttpHost(proxyHost, proxyPort);
-                        httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
-                    }
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e(TAG, "initAllHooks: e=" +e.getMessage());
-        }
+//        try {
+//            Class<?> DefaultHttpClient = XposedHelpers.findClass("org.apache.http.impl.client.DefaultHttpClient", loadPackageParam.classLoader);
+//            hookAllConstructors(DefaultHttpClient, new XC_MethodHook() {
+//                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//
+//                    if (sPrefs.getBoolean("switch_proxy", false)) {
+//                        String proxyHost = sPrefs.getString("host", null);
+//                        int proxyPort;
+//                        try {
+//                            proxyPort = Integer.parseInt(sPrefs.getString("port", null));
+//                        } catch (NumberFormatException ex) {
+//                            proxyPort = -1;
+//                        }
+//
+//                        DefaultHttpClient httpClient = (DefaultHttpClient) param.thisObject;
+//                        HttpHost proxy = new HttpHost(proxyHost, proxyPort);
+//                        httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+//                    }
+//                }
+//            });
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            Log.e(TAG, "initAllHooks: e=" +e.getMessage());
+//        }
 
     }
 }

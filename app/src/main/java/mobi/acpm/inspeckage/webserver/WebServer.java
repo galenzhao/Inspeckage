@@ -120,6 +120,10 @@ public class WebServer extends fi.iki.elonen.NanoHTTPD {
                 keyStore = KeyStore.getInstance("AndroidKeyStore");
                 keyStore.load(null);
             }
+
+            if (mPrefs.getString(Config.SP_FINGERPRINT_HOOKS, "").isEmpty()){
+                Fingerprint.getInstance(mContext).load();
+            }
         }
         catch(Exception e) {
             Log.e("Error",e.getMessage());

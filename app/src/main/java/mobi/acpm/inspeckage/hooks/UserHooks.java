@@ -1,5 +1,7 @@
 package mobi.acpm.inspeckage.hooks;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
@@ -40,6 +42,7 @@ public class UserHooks extends XC_MethodHook {
         sPrefs = prefs;
         lpp = loadPackageParam;
         String json = "{\"hookJson\": " + sPrefs.getString(Config.SP_USER_HOOKS, "") + "}";
+        Log.i(TAG, "initAllHooks: json="+json);
         try {
 
             if(!json.trim().equals("{\"hookJson\":}")) {
