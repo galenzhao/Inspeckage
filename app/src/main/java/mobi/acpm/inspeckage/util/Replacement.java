@@ -1,5 +1,7 @@
 package mobi.acpm.inspeckage.util;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 
 import java.util.List;
@@ -223,23 +225,25 @@ public class Replacement {
                             param.setResult(Boolean.valueOf(item.returnNewValue.toString()));
                         } else if (item.returnType.equals("String") && param.getResult() instanceof String) {
 
-                            if (item.returnMatch != null && item.returnMatch.toString().trim() != "") {
-                                if (item.returnMatch.equals(param.getResult())) {
-                                    param.setResult(item.returnNewValue);
-                                }
-                            } else {
-                                param.setResult(item.returnNewValue);
-                            }
+//                            if (item.returnMatch != null && item.returnMatch.toString().trim() != "") {
+//                                if (item.returnMatch.equals(param.getResult())) {
+//                                    param.setResult(item.returnNewValue);
+//                                }
+//                            } else {
+//                                param.setResult(item.returnNewValue);
+//                            }
+                            param.setResult(item.returnNewValue);
 
                         } else if (item.returnType.equals("int") && param.getResult() instanceof Integer) {
 
-                            if (item.returnMatch != null && item.returnMatch.toString().trim() != "") {
-                                if (Integer.valueOf(item.returnNewValue.toString()).equals(param.getResult())) {
-                                    param.setResult(Integer.valueOf(item.returnNewValue.toString()));
-                                }
-                            } else {
-                                param.setResult(Integer.valueOf(item.returnNewValue.toString()));
-                            }
+//                            if (item.returnMatch != null && item.returnMatch.toString().trim() != "") {
+//                                if (Integer.valueOf(item.returnNewValue.toString()).equals(param.getResult())) {
+//                                    param.setResult(Integer.valueOf(item.returnNewValue.toString()));
+//                                }
+//                            } else {
+//                            }
+                            param.setResult(Integer.valueOf(item.returnNewValue.toString()));
+                            Log.i(TAG, "resultReplace: param.getResult() =" + param.getResult()+ ",returnNewValue="+item.returnNewValue);
 
                         } else if (item.returnType.equals("ByteArray") && param.getResult().getClass().equals(byte[].class)) {
                             String v = Util.byteArrayToString((byte[]) param.getResult());
