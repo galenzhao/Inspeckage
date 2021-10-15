@@ -8,7 +8,15 @@ android {
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 10
-        versionName "2.4"
+        versionName "2.4.3"
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    // For Kotlin projects
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 
     buildTypes {
@@ -36,7 +44,9 @@ dependencies {
 
     // RemotePreferences
     implementation 'com.crossbowffs.remotepreferences:remotepreferences:0.6'
-    implementation "androidx.core:core-ktx:+"
+//    implementation "androidx.core:core-ktx:+"
+    implementation "androidx.core:core-ktx:1.6.0"
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     implementation "com.squareup.okhttp3:okhttp:3.14.4"

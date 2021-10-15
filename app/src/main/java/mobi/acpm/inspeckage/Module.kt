@@ -83,7 +83,7 @@ class Module : XC_MethodHook(), IXposedHookLoadPackage, IXposedHookZygoteInit {
                     @Throws(Throwable::class)
                     override fun afterHookedMethod(param: MethodHookParam) {
                         val tag = param.args[0]
-                        if (param.args[0] === "Xposed" || param.args[0] == "EdXposed-Bridge") {
+                        if (param.args[0] === "Xposed" || param.args[0] == "LSPosed-Bridge" || param.args[0] == "EdXposed-Bridge") {
                             val log = param.args[1] as String
                             var ft: FileType? = null
                             if (log.contains(SharedPrefsHook.TAG)) { //5
